@@ -1,0 +1,23 @@
+def chatbot_response(user_input):
+    user_input = user_input.lower()
+    if "hello" in user_input or "hi" in user_input:
+        return "Hello! Kaise ho aap?"
+    elif "how are you" in user_input:
+        return "Main bilkul theek hoon! Aap kaise hain?"
+    elif "name" in user_input:
+        return "Mera naam ChatGPT hai. Aapka naam kya hai?"
+    elif "bye" in user_input:
+        return "Alvida! Aapka din shubh ho!"
+    elif "weather" in user_input:
+        return "Mujhe maloom nahi, lekin ummid hai ki mausam acha hoga!"
+    else:
+        return "Maaf kariye, mujhe samajh nahi aaya. Kya aap kuch aur puchna chahenge?"
+
+print("Chatbot se baat karein! ('exit' likhne se chat khatam hogi)")
+while True:
+    user_input = input("Aap: ")
+    if user_input.lower() == "exit":
+        print("Chatbot: Alvida!")
+        break
+    response = chatbot_response(user_input)
+    print("Chatbot:", response)
