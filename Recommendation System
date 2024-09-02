@@ -1,0 +1,49 @@
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Sample Data: Movies and Ratings
+movies = {
+    'movie_id': [1, 2, 3, 4, 5],
+    'title': ['The Matrix', 'Toy Story', 'Jumanji', 'Pulp Fiction', 'The Godfather'],
+    'genres': ['Sci-Fi', 'Animation|Adventure', 'Adventure|Fantasy', 'Crime|Drama', 'Crime|Drama']
+}
+
+ratings = {
+    'user_id': [1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5],
+    'movie_id': [1, 2, 3, 1, 4, 2, 4, 5, 3, 4, 5, 1, 2, 5],
+    'rating': [5, 3, 4, 4, 5, 2, 4, 5, 4, 5, 4, 5, 3, 5]
+}
+
+# Create DataFrames
+movies_df = pd.DataFrame(movies)
+ratings_df = pd.DataFrame(ratings)
+
+# Merge Movies and Ratings
+df = pd.merge(ratings_df, movies_df, on='movie_id')
+
+# Create a pivot table: Users as rows, Movies as columns
+pivot_table = df.pivot_table(index='user_id', columns='title', values='rating')
+
+# Fill NaN with 0 (can also use other strategies like mean imputation)
+pivot_table = pivot_table.fillna(0)
+
+# Calculate Cosine Similarity between movies
+cosine_sim = cosine_similarity(pivot_table.T)  # Transpose to get movies in rows
+
+# Create a DataFrame to hold similarity values
+similarity_df = pd.DataFrame(cosine_sim, index=pivot_table.columns, columns=pivot_table.columns)
+
+# Function to Get Movie Recommendations
+def get_movie_recommendations(movie_title, similarity_df, top_n=3):
+    # Get the similarity scores for the given movie
+    scores = similarity_df[movie_title].sort_values(ascending=False)
+    
+    # Exclude the input movie itself and get top N similar movies
+    recommended_movies = scores.iloc[1:top_n+1].index.tolist()
+    
+    return recommended_movies
+
+# Example: Recommend movies similar to 'The Matrix'
+recommended_movies = get_movie_recommendations('The Matrix', similarity_df)
+print("Movies similar to 'The Matrix':", recommended_movies)
